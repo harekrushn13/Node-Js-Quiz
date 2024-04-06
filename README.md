@@ -59,7 +59,7 @@ This is a simple web application for taking and evaluating quizzes related to No
 ![start quiz page](https://github.com/harekrushn13/Node-Js-Quiz/assets/115085962/d0b59ab8-2b6f-4d24-ac82-3ff8ea32de9a)
 
 ### Quiz Page
-![quiz page](https://github.com/harekrushn13/Node-Js-Quiz/assets/115085962/62ea1102-1fba-4a5d-a75b-42a1ed2a9254)
+![quiz page](https://github.com/harekrushn13/Node-Js-Quiz/assets/115085962/907c96e2-1d11-45cf-859e-8cff96e25ce4)
 
 ### Submit Quiz
 ![submit quiz](https://github.com/harekrushn13/Node-Js-Quiz/assets/115085962/70eabc32-f208-42be-a05d-03a5fe7b9690)
