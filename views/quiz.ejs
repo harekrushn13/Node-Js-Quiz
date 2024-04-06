@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Node.js Quiz</title>
+
+    <style>
+      .option {
+        padding: 5px;
+        margin: 5px;
+      }
+      .selected {
+        background-color: lightgreen;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Node.js Quiz</h1>
+
+    <div>
+      <div id="quizContainer">
+        <p id="questionText"></p>
+        <div id="options"></div>
+        <button id="prevButton" onclick="prevQuestion()">Previous</button>
+        <button id="nextButton" onclick="nextQuestion()">Next</button>
+      </div>
+
+      <button id="submitButton" onclick="submitQuiz()" style="display: none">
+        Submit Quiz
+      </button>
+    </div>
+
+    <script>
+      let currentQuestion = 0;
+      let questions = [];
+      let selectedAnswers = [];
+
+      async function fetchQuestions() {
+        try {
+          const response = await fetch("/question");
+          const data = await response.json();
+
+          questions = data.data.questions;
+          selectedAnswers = Array(questions.length).fill(null);
+
+          displayQuestion(currentQuestion);
+        } catch (error) {
+          console.error(error.message);
+        }
+      }
+
+      function displayQuestion(index) {
+        const question = questions[index];
+
+        document.getElementById("questionText").textContent = `${index + 1}. ${
+          question.question
+        }`;
+
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+        question.options.forEach((option, ind) => {
+          const optionElement = document.createElement("div");
+          optionElement.textContent = option;
+          optionElement.classList.add("option");
+          optionElement.onclick = () => selectOption(ind);
+          if (selectedAnswers[index] === ind) {
+            optionElement.classList.add("selected");
+          }
+          optionsContainer.appendChild(optionElement);
+        });
+        updateButtons();
+      }
+
+      function selectOption(optionInd) {
+        selectedAnswers[currentQuestion] = optionInd;
+        const options = document.querySelectorAll(".option");
+        options.forEach((option, ind) => {
+          if (ind === optionInd) {
+            option.classList.add("selected");
+          } else {
+            option.classList.remove("selected");
+          }
+        });
+        updateButtons();
+      }
+
+      function updateButtons() {
+        document.getElementById("prevButton").disabled = currentQuestion === 0;
+        document.getElementById("nextButton").disabled =
+          currentQuestion === questions.length - 1;
+        document.getElementById("submitButton").style.display =
+          currentQuestion === questions.length - 1 ? "block" : "none";
+      }
+
+      function nextQuestion() {
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          displayQuestion(currentQuestion);
+        }
+      }
+
+      function prevQuestion() {
+        if (currentQuestion > 0) {
+          currentQuestion--;
+          displayQuestion(currentQuestion);
+        }
+      }
+
+      async function submitQuiz() {
+        const quizData = questions.map((question, index) => ({
+          id: question.id,
+          answerGiven: question.options[selectedAnswers[index]] || null,
+        }));
+
+        const res = await fetch("/evaluate", {
+          method: "POST",
+          body: JSON.stringify(quizData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await res.json();
+
+        localStorage.setItem(
+          "quizResult",
+          JSON.stringify(data.data.quizResult)
+        );
+        localStorage.setItem("totalScore", data.data.totalScore);
+        window.location.href = "/result";
+      }
+      window.onload = fetchQuestions;
+    </script>
+  </body>
+</html>

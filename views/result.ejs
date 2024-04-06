@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Result</title>
+
+    <style>
+      .option {
+        padding: 5px;
+        margin: 5px;
+      }
+
+      .correct {
+        background-color: lightgreen;
+      }
+
+      .incorrect {
+        background-color: lightcoral;
+      }
+
+      #goBackButton {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const totalScore = JSON.parse(localStorage.getItem("totalScore"));
+        document.getElementById("totalScore").textContent = totalScore;
+
+        const quizResult = JSON.parse(localStorage.getItem("quizResult"));
+
+        const quizContainer = document.getElementById("quizContainer");
+        let currentQuestion = 0;
+
+        function displayQuestion(index) {
+          const result = quizResult[index];
+          const questionText = document.getElementById("questionText");
+          const optionsContainer = document.getElementById("options");
+          optionsContainer.innerHTML = "";
+
+          questionText.textContent = `${index + 1}. ${result.question}`;
+
+          result.options.forEach((option) => {
+            const optionElement = document.createElement("div");
+            optionElement.textContent = option;
+            optionElement.classList.add("option");
+            if (result.isCorrect && result.answerGiven === option) {
+              optionElement.classList.add("correct");
+            } else if (!result.isCorrect && result.correctAnswer === option) {
+              optionElement.classList.add("correct");
+            } else if (!result.isCorrect && result.answerGiven === option) {
+              optionElement.classList.add("incorrect");
+            }
+            optionsContainer.appendChild(optionElement);
+          });
+
+          if (result.answerGiven === null || result.answerGiven === undefined) {
+            const remark = document.createElement("p");
+            remark.textContent = "No Attempted !!";
+            optionsContainer.appendChild(remark);
+          }
+        }
+
+        displayQuestion(currentQuestion);
+
+        document
+          .getElementById("prevButton")
+          .addEventListener("click", function () {
+            if (currentQuestion > 0) {
+              currentQuestion--;
+              displayQuestion(currentQuestion);
+            }
+          });
+
+        document
+          .getElementById("nextButton")
+          .addEventListener("click", function () {
+            if (currentQuestion < quizResult.length - 1) {
+              currentQuestion++;
+              displayQuestion(currentQuestion);
+            }
+          });
+
+        document
+          .getElementById("goBackButton")
+          .addEventListener("click", function () {
+            localStorage.removeItem("quizResult");
+            localStorage.removeItem("totalScore");
+            window.location.href = "/";
+          });
+      });
+    </script>
+  </head>
+
+  <body>
+    <h1>Quiz Result</h1>
+    <h2>Total Score: <span id="totalScore"></span></h2>
+
+    <div id="quizContainer">
+      <p id="questionText"></p>
+      <div id="options"></div>
+      <button id="prevButton" onclick="prevQuestion()">Previous</button>
+      <button id="nextButton" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <button id="goBackButton">Go Back to Main Page</button>
+  </body>
+</html>
