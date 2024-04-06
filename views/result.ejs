@@ -66,6 +66,7 @@
           if (result.answerGiven === null || result.answerGiven === undefined) {
             const remark = document.createElement("p");
             remark.textContent = "No Attempted !!";
+            remark.style.color = "red";
             optionsContainer.appendChild(remark);
           }
         }

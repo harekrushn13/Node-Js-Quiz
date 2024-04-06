@@ -1,4 +1,3 @@
-const { options } = require("../routes/user-routes");
 const allQuestions = require("../services/questions.json");
 const { ok200 } = require("../utils/response-utils");
 
